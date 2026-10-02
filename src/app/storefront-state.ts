@@ -10,6 +10,12 @@ export interface CartLine {
   readonly quantity: number;
 }
 
+export interface CustomerDetails {
+  readonly name: string;
+  readonly phone: string;
+  readonly address: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class StorefrontState {
   readonly activePanel = signal<HeaderPanel>(null);
@@ -86,11 +92,13 @@ export class StorefrontState {
     );
   }
 
-  whatsappCartLink(): string {
+  whatsappCartLink(customer: CustomerDetails): string {
     const orderSummary = this.cartState()
       .map((line) => `${line.collection.name} — taille ${line.size} × ${line.quantity}`)
       .join('\n');
-    const message = encodeURIComponent(`Bonjour, je souhaite commander :\n${orderSummary}`);
+    const message = encodeURIComponent(
+      `Bonjour, je souhaite confirmer cette commande.\n\nNom : ${customer.name}\nTéléphone : ${customer.phone}\nAdresse : ${customer.address}\n\nArticles :\n${orderSummary}`,
+    );
 
     return `https://wa.me/${whatsappNumber}?text=${message}`;
   }

@@ -125,9 +125,43 @@
       </div>
       @if (storefront.activePanel() === 'cart') {
         <footer class="border-t border-black/10 px-6 py-5">
-          <a class="inline-flex min-h-12 w-full items-center justify-center bg-black px-5 text-xs font-semibold uppercase text-white transition hover:bg-black/75" [class.pointer-events-none]="!storefront.cartCount()" [class.opacity-40]="!storefront.cartCount()" [attr.aria-disabled]="!storefront.cartCount()" [href]="storefront.cartCount() ? storefront.whatsappCartLink() : null" target="_blank" rel="noopener noreferrer">
-            Commander sur WhatsApp
-          </a>
+          @if (!checkoutOpen()) {
+            <button
+              class="inline-flex min-h-12 w-full items-center justify-center bg-black px-5 text-xs font-semibold uppercase text-white transition hover:bg-black/75 disabled:cursor-not-allowed disabled:opacity-40"
+              type="button"
+              [disabled]="!storefront.cartCount()"
+              (click)="startCheckout()"
+            >
+              Finaliser ma commande
+            </button>
+          } @else {
+            <form class="grid gap-4" novalidate (submit)="confirmOrder($event)">
+              <label class="grid gap-1 text-xs font-semibold uppercase">
+                Nom
+                <input id="checkout-name" class="min-h-11 border border-black/25 px-3 text-sm font-normal normal-case outline-none focus:border-black" [class.border-rose-700]="nameError()" [attr.aria-invalid]="nameError() ? 'true' : null" [attr.aria-describedby]="nameError() ? 'checkout-name-error' : null" type="text" name="customerName" autocomplete="name" [value]="customerName()" (input)="customerName.set($any($event.target).value)" />
+                @if (nameError()) {
+                  <span id="checkout-name-error" class="text-[11px] font-normal normal-case text-rose-700" role="alert">{{ nameError() }}</span>
+                }
+              </label>
+              <label class="grid gap-1 text-xs font-semibold uppercase">
+                Numéro
+                <input id="checkout-phone" class="min-h-11 border border-black/25 px-3 text-sm font-normal normal-case outline-none focus:border-black" [class.border-rose-700]="phoneError()" [attr.aria-invalid]="phoneError() ? 'true' : null" [attr.aria-describedby]="phoneError() ? 'checkout-phone-error' : null" type="tel" name="customerPhone" autocomplete="tel" inputmode="tel" [value]="customerPhone()" (input)="customerPhone.set($any($event.target).value)" />
+                @if (phoneError()) {
+                  <span id="checkout-phone-error" class="text-[11px] font-normal normal-case text-rose-700" role="alert">{{ phoneError() }}</span>
+                }
+              </label>
+              <label class="grid gap-1 text-xs font-semibold uppercase">
+                Adresse
+                <textarea id="checkout-address" class="min-h-20 border border-black/25 px-3 py-2 text-sm font-normal normal-case outline-none focus:border-black" [class.border-rose-700]="addressError()" [attr.aria-invalid]="addressError() ? 'true' : null" [attr.aria-describedby]="addressError() ? 'checkout-address-error' : null" name="customerAddress" autocomplete="street-address" [value]="customerAddress()" (input)="customerAddress.set($any($event.target).value)"></textarea>
+                @if (addressError()) {
+                  <span id="checkout-address-error" class="text-[11px] font-normal normal-case text-rose-700" role="alert">{{ addressError() }}</span>
+                }
+              </label>
+              <button class="inline-flex min-h-12 w-full cursor-pointer items-center justify-center bg-black px-5 text-xs font-semibold uppercase text-white transition hover:bg-black/75" type="submit">
+                Confirmer ma commande
+              </button>
+            </form>
+          }
         </footer>
       }
     </aside>

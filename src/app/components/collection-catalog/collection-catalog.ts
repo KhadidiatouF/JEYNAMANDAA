@@ -91,12 +91,4 @@ export class CollectionCatalog {
     this.storefront.activePanel.set('cart');
   }
 
-  orderLink(collection: FashionCollection, size: string): string {
-    const subject = encodeURIComponent(`Commande ${collection.name}`);
-    const body = encodeURIComponent(
-      `Bonjour, je souhaite commander la collection ${collection.name}, taille ${size}.`,
-    );
-
-    return `mailto:contact@jeynamandaa.sn?subject=${subject}&body=${body}`;
-  }
 }
