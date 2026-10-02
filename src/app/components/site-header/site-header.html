@@ -29,15 +29,15 @@
       {{ menuOpen() ? '×' : '☰' }}
     </button>
     <a class="col-start-2 row-start-1 justify-self-center whitespace-nowrap text-[24px] font-bold max-[760px]:text-[18px]" href="#top" aria-label="Accueil Jeynamandaa">JEYNAMANDAA</a>
-    <div class="col-start-3 row-start-1 flex items-center justify-self-end gap-5 max-[760px]:gap-3">
-      <button class="grid h-9 w-9 cursor-pointer place-items-center text-base" type="button" aria-label="Rechercher" (click)="openPanel('search')"><fa-icon [icon]="faMagnifyingGlass" /></button>
-      <button class="relative grid h-9 w-9 cursor-pointer place-items-center text-base" type="button" aria-label="Favoris" (click)="openPanel('favorites')">
+    <div class="col-start-3 row-start-1 flex items-center justify-self-end gap-5 max-[760px]:-mr-4 max-[760px]:gap-1">
+      <button class="grid h-9 w-9 cursor-pointer place-items-center text-base max-[760px]:h-8 max-[760px]:w-8" type="button" aria-label="Rechercher" (click)="openPanel('search')"><fa-icon [icon]="faMagnifyingGlass" /></button>
+      <button class="relative grid h-9 w-9 cursor-pointer place-items-center text-base max-[760px]:h-8 max-[760px]:w-8" type="button" aria-label="Favoris" (click)="openPanel('favorites')">
         <fa-icon [icon]="faHeart" />
         @if (storefront.favoriteCollections().length) {
           <span class="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-black px-1 text-[9px] text-white">{{ storefront.favoriteCollections().length }}</span>
         }
       </button>
-      <button class="relative grid h-9 w-9 cursor-pointer place-items-center text-base" type="button" aria-label="Panier" (click)="openPanel('cart')">
+      <button class="relative grid h-9 w-9 cursor-pointer place-items-center text-base max-[760px]:h-8 max-[760px]:w-8" type="button" aria-label="Panier" (click)="openPanel('cart')">
         <fa-icon [icon]="faBagShopping" />
         @if (storefront.cartCount()) {
           <span class="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-black px-1 text-[9px] text-white">{{ storefront.cartCount() }}</span>
