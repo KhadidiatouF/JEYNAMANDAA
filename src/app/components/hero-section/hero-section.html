@@ -1,0 +1,45 @@
+<section class="relative min-h-[100svh] overflow-hidden bg-[#d6c4b8]" aria-labelledby="hero-title">
+  <video
+    class="hero-video-bloom"
+    autoplay
+    muted
+    [muted]="true"
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    (loadedmetadata)="startAfterIntro($event)"
+    (timeupdate)="loopAtEnd($event)"
+    (ended)="restartAfterIntro($event)"
+  >
+    <source [src]="videoSource" type="video/mp4" />
+  </video>
+  <video
+    class="hero-video"
+    autoplay
+    muted
+    [muted]="true"
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    (loadedmetadata)="startAfterIntro($event)"
+    (timeupdate)="loopAtEnd($event)"
+    (ended)="restartAfterIntro($event)"
+  >
+    <source [src]="videoSource" type="video/mp4" />
+  </video>
+  <div class="absolute inset-0 z-[2] bg-black/15"></div>
+  <div class="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-5 pt-28 text-center text-white">
+    <p class="mb-4 text-[10px] font-extrabold uppercase tracking-[0.16em]">Limited edition capsule</p>
+    <h1 id="hero-title" class="mb-3 max-w-4xl font-serif text-[clamp(4rem,11vw,9rem)] font-normal italic leading-[0.82] tracking-[-0.04em]">
+      L’allure en héritage
+    </h1>
+    <p class="mb-6 max-w-xl text-sm font-medium">
+      Une sélection couture pensée comme une campagne mode: forte, nette, désirable.
+    </p>
+    <a
+      class="inline-flex min-h-10 items-center justify-center rounded-full bg-white px-7 text-[10px] font-extrabold uppercase tracking-[0.08em] text-black transition hover:bg-black hover:text-white"
+      href="#catalogue"
+      >Shop the re-stock</a
+    >
+  </div>
+</section>

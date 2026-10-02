@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: #111111;
+    overflow-x: hidden;
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  h1,
+  h2 {
+    line-height: 1.02;
+  }
+}
+
+@layer utilities {
+  .font-cormorant {
+    font-family: "Cormorant Garamond", Georgia, serif;
+  }
+}
+
+.hero-video,
+.hero-video-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100svh;
+  height: 100vw;
+  object-fit: cover;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.hero-video {
+  z-index: 1;
+}
+
+.hero-video-bloom {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .hero-video-bloom {
+    display: block;
+    z-index: 0;
+    opacity: 0.7;
+    filter: blur(28px);
+    transform: translate(-50%, -50%) rotate(-90deg) scale(1.18);
+  }
+}
+
