@@ -1,10 +1,15 @@
 <section
-  class="relative min-h-[58svh] overflow-hidden bg-black text-white"
+  class="relative min-h-[108svh] overflow-hidden bg-black text-white"
   [attr.aria-labelledby]="titleId()"
 >
-  <img class="absolute inset-0 h-full w-full object-cover object-center opacity-80" [src]="image()" [alt]="imageAlt()" />
+  <img class="absolute inset-0 h-full w-full object-cover object-top opacity-80 max-[760px]:object-center" [src]="image()" [alt]="imageAlt()" />
   <div class="absolute inset-0 bg-black/30"></div>
-  <div class="relative z-10 flex min-h-[58svh] flex-col items-center justify-center px-5 text-center">
+  <div
+    class="relative z-10 flex min-h-[108svh] flex-col items-center justify-center px-5 text-center max-[760px]:pt-0"
+    [class.pt-112]="lowerContentMore()"
+    [class.pt-64]="lowerContent() && !lowerContentMore()"
+    [class.pt-14]="!lowerContent() && !lowerContentMore()"
+  >
     <p class="mb-3 text-[10px] font-extrabold uppercase tracking-[0.16em]">{{ eyebrow() }}</p>
     <h2 class="mb-4 font-serif text-[clamp(3rem,7vw,6rem)] font-normal leading-none" [id]="titleId()">{{ title() }}</h2>
     <p class="mb-6 max-w-lg text-sm text-white/85">Une histoire visuelle autour de la coupe, de la matière et de l’attitude.</p>

@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 export class HeroSection {
   readonly videoSource = '/assets/Hero/XEËNAAN, c’est une émotion.Des prénoms sérères qui portent des souvenirs, des racines, des prome.mp4';
 
-  private readonly introDuration = 4.5;
+  private readonly introDuration = 5;
   private readonly endTime = 72;
 
   startAfterIntro(event: Event): void {

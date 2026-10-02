@@ -30,9 +30,19 @@
     </button>
     <a class="col-start-2 row-start-1 justify-self-center whitespace-nowrap text-[24px] font-bold max-[760px]:text-[18px]" href="#top" aria-label="Accueil Jeynamandaa">JEYNAMANDAA</a>
     <div class="col-start-3 row-start-1 flex items-center justify-self-end gap-5 max-[760px]:gap-3">
-      <button class="text-lg leading-none" type="button" aria-label="Rechercher">⌕</button>
-      <button class="text-lg leading-none" type="button" aria-label="Panier">♡</button>
-      <button class="text-lg leading-none" type="button" aria-label="Compte">□</button>
+      <button class="grid h-9 w-9 cursor-pointer place-items-center text-base" type="button" aria-label="Rechercher" (click)="openPanel('search')"><fa-icon [icon]="faMagnifyingGlass" /></button>
+      <button class="relative grid h-9 w-9 cursor-pointer place-items-center text-base" type="button" aria-label="Favoris" (click)="openPanel('favorites')">
+        <fa-icon [icon]="faHeart" />
+        @if (storefront.favoriteCollections().length) {
+          <span class="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-black px-1 text-[9px] text-white">{{ storefront.favoriteCollections().length }}</span>
+        }
+      </button>
+      <button class="relative grid h-9 w-9 cursor-pointer place-items-center text-base" type="button" aria-label="Panier" (click)="openPanel('cart')">
+        <fa-icon [icon]="faBagShopping" />
+        @if (storefront.cartCount()) {
+          <span class="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-black px-1 text-[9px] text-white">{{ storefront.cartCount() }}</span>
+        }
+      </button>
     </div>
     @if (menuOpen()) {
       <nav
@@ -48,4 +58,78 @@
       </nav>
     }
   </header>
+
+  @if (storefront.activePanel() === 'search') {
+    <section class="absolute left-0 right-0 top-full max-h-[75svh] overflow-y-auto bg-white px-6 py-6 text-black shadow-xl" aria-label="Recherche">
+      <div class="mx-auto max-w-3xl">
+        <div class="flex items-center gap-3 border-b border-black/30 pb-3">
+          <fa-icon [icon]="faMagnifyingGlass" />
+          <input class="min-h-10 min-w-0 flex-1 bg-transparent text-sm outline-none" type="search" placeholder="Rechercher une collection" [value]="storefront.searchQuery()" (input)="setSearchQuery($event)" />
+          <button class="grid h-9 w-9 cursor-pointer place-items-center" type="button" aria-label="Fermer la recherche" (click)="closePanel()"><fa-icon [icon]="faXmark" /></button>
+        </div>
+        @if (storefront.searchQuery().trim()) {
+          <div class="grid gap-1 pt-4">
+            @for (collection of storefront.searchResults(); track collection.name) {
+              <a class="flex items-center gap-4 px-2 py-2 text-sm uppercase transition hover:bg-black/5" [routerLink]="storefront.isFeatured(collection) ? '/' : '/collections'" (click)="closePanel()">
+                <img class="h-14 w-12 object-cover object-top" [src]="collection.galleryImages[0]" [alt]="collection.imageAlt" />
+                {{ collection.name }}
+              </a>
+            } @empty {
+              <p class="py-5 text-sm text-black/55">Aucune collection trouvée.</p>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (storefront.activePanel() === 'favorites' || storefront.activePanel() === 'cart') {
+    <button class="fixed inset-0 z-[60] cursor-default bg-black/45" type="button" aria-label="Fermer le panneau" (click)="closePanel()"></button>
+    <aside class="fixed bottom-0 right-0 top-0 z-[61] flex w-full max-w-md flex-col bg-white text-black shadow-2xl" [attr.aria-label]="storefront.activePanel() === 'cart' ? 'Panier' : 'Favoris'">
+      <header class="flex items-center justify-between border-b border-black/10 px-6 py-5">
+        <h2 class="mb-0 font-serif text-3xl font-normal">{{ storefront.activePanel() === 'cart' ? 'Votre panier' : 'Vos favoris' }}</h2>
+        <button class="grid h-10 w-10 cursor-pointer place-items-center text-xl" type="button" aria-label="Fermer le panneau" (click)="closePanel()"><fa-icon [icon]="faXmark" /></button>
+      </header>
+      <div class="flex-1 overflow-y-auto px-6 py-5">
+        @if (storefront.activePanel() === 'cart') {
+          @for (line of storefront.cartItems(); track line.collection.name + line.size) {
+            <article class="flex gap-4 border-b border-black/10 py-4">
+              <img class="h-28 w-20 object-cover object-top" [src]="line.collection.galleryImages[0]" [alt]="line.collection.imageAlt" />
+              <div class="min-w-0 flex-1">
+                <h3 class="mb-1 text-sm font-semibold uppercase">{{ line.collection.name }}</h3>
+                <p class="mb-3 text-xs text-black/55">Taille : {{ line.size }}</p>
+                <div class="flex items-center gap-3">
+                  <button class="grid h-8 w-8 cursor-pointer place-items-center border border-black/20" type="button" [attr.aria-label]="'Retirer un ' + line.collection.name + ' taille ' + line.size" (click)="storefront.changeQuantity(line.collection.name, line.size, -1)"><fa-icon [icon]="faMinus" /></button>
+                  <span class="min-w-4 text-center text-sm">{{ line.quantity }}</span>
+                  <button class="grid h-8 w-8 cursor-pointer place-items-center border border-black/20" type="button" [attr.aria-label]="'Ajouter un ' + line.collection.name + ' taille ' + line.size" (click)="storefront.changeQuantity(line.collection.name, line.size, 1)"><fa-icon [icon]="faPlus" /></button>
+                  <button class="ml-auto grid h-8 w-8 cursor-pointer place-items-center text-black/55 hover:text-black" type="button" aria-label="Supprimer l’article" (click)="storefront.removeFromCart(line.collection.name, line.size)"><fa-icon [icon]="faTrashCan" /></button>
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <p class="py-12 text-center text-sm text-black/55">Votre panier est vide.</p>
+          }
+        } @else {
+          @for (collection of storefront.favoriteCollections(); track collection.name) {
+            <article class="flex gap-4 border-b border-black/10 py-4">
+              <img class="h-28 w-20 object-cover object-top" [src]="collection.galleryImages[0]" [alt]="collection.imageAlt" />
+              <div class="flex flex-1 flex-col items-start justify-center">
+                <h3 class="mb-3 text-sm font-semibold uppercase">{{ collection.name }}</h3>
+                <button class="cursor-pointer text-xs underline underline-offset-4" type="button" (click)="storefront.toggleFavorite(collection.name)">Retirer des favoris</button>
+              </div>
+            </article>
+          } @empty {
+            <p class="py-12 text-center text-sm text-black/55">Aucun favori pour le moment.</p>
+          }
+        }
+      </div>
+      @if (storefront.activePanel() === 'cart') {
+        <footer class="border-t border-black/10 px-6 py-5">
+          <a class="inline-flex min-h-12 w-full items-center justify-center bg-black px-5 text-xs font-semibold uppercase text-white transition hover:bg-black/75" [class.pointer-events-none]="!storefront.cartCount()" [class.opacity-40]="!storefront.cartCount()" [attr.aria-disabled]="!storefront.cartCount()" [href]="storefront.cartCount() ? storefront.whatsappCartLink() : null" target="_blank" rel="noopener noreferrer">
+            Commander sur WhatsApp
+          </a>
+        </footer>
+      }
+    </aside>
+  }
 </div>

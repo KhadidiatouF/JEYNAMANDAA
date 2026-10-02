@@ -7,10 +7,12 @@ import { ServiceGrid } from './components/service-grid/service-grid';
 import { SiteFooter } from './components/site-footer/site-footer';
 import { SiteHeader } from './components/site-header/site-header';
 import { SocialLinks } from './components/social-links/social-links';
-import { collections, menCategories, services, womenCategories } from './storefront-data';
+import { WhatsAppButton } from './components/whatsapp-button/whatsapp-button';
+import { collections, featuredCollections, menCategories, services, womenCategories } from './storefront-data';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-home-page',
   imports: [
     CategoryFeature,
     HeroSection,
@@ -21,13 +23,14 @@ import { collections, menCategories, services, womenCategories } from './storefr
     SiteHeader,
     SocialLinks,
   ],
-  templateUrl: './app.html',
+  templateUrl: './home-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App {
+export class HomePage {
   readonly womenCategories = womenCategories;
   readonly menCategories = menCategories;
   readonly collections = collections;
+  readonly featuredCollections = featuredCollections;
   readonly services = services;
   readonly editorialCollections = [
     {
@@ -79,3 +82,11 @@ export class App {
     });
   }
 }
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, WhatsAppButton],
+  templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class App {}

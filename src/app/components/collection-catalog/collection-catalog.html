@@ -3,32 +3,135 @@
   aria-labelledby="catalogue-title"
 >
   <div class="mx-auto mb-6 max-w-[92rem] text-center">
-    <h2 id="catalogue-title" class="mb-0 text-sm font-extrabold uppercase tracking-[0.08em]">
-      Shop the Legacy Capsule
-    </h2>
+    <h2 id="catalogue-title" class="mb-0 font-serif text-3xl font-normal">{{ title() }}</h2>
   </div>
 
   <div class="mx-auto grid max-w-[92rem] grid-cols-4 gap-4 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
     @for (collection of collections(); track collection.name) {
       <article class="group bg-white">
         <div class="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6]">
-          <span class="absolute left-3 top-3 z-10 text-[9px] font-extrabold uppercase tracking-[0.08em]">New</span>
-          <img class="block h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.035]" [src]="collection.image" [alt]="collection.imageAlt" />
+          <button
+            class="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center bg-white/90 text-black transition hover:bg-white"
+            type="button"
+            [attr.aria-label]="isFavorite(collection) ? 'Retirer ' + collection.name + ' des favoris' : 'Ajouter ' + collection.name + ' aux favoris'"
+            [attr.aria-pressed]="isFavorite(collection)"
+            (click)="toggleFavorite(collection)"
+          >
+            <fa-icon [icon]="isFavorite(collection) ? heartSolid : heartRegular" />
+          </button>
+          <button
+            class="block h-full w-full cursor-pointer"
+            type="button"
+            [attr.aria-label]="'Voir les détails de ' + collection.name"
+            (click)="openDetails(collection)"
+          >
+            <img class="block h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.035]" [src]="collection.galleryImages[0]" [alt]="collection.imageAlt" />
+          </button>
         </div>
         <div class="px-1 py-4 text-center">
-          <h3 class="mb-2 text-[11px] font-bold">{{ collection.name }}</h3>
+          <h3 class="mb-2 text-[11px] font-bold uppercase">{{ collection.name }}</h3>
           <p class="mb-3 text-[10px] text-black/50">Capsule Baaxantal</p>
-          <div class="flex justify-center gap-4 text-[9px] uppercase text-black/70">
-            <span>XS</span>
-            <span>S</span>
-            <span>M</span>
-            <span>L</span>
-            <span>XL</span>
-          </div>
+          <button class="cursor-pointer text-[10px] underline underline-offset-4" type="button" (click)="openDetails(collection)">Voir les détails</button>
         </div>
       </article>
     }
   </div>
 
+  @if (showMore()) {
+    <div class="mt-8 text-center">
+      <a class="inline-flex min-h-11 items-center justify-center border border-black px-8 text-xs font-semibold uppercase transition hover:bg-black hover:text-white" routerLink="/collections">Voir plus</a>
+    </div>
+  }
+
   <div class="mx-auto mt-10 h-px max-w-[46rem] bg-black"></div>
+
+  <dialog
+    #productDialog
+    class="m-auto max-h-[90svh] w-[94vw] max-w-5xl overflow-y-auto border-0 bg-white p-0 text-black shadow-2xl backdrop:bg-black/70"
+    aria-labelledby="product-dialog-title"
+    (click)="closeOnBackdrop($event)"
+    (close)="resetDetails()"
+  >
+    @if (selectedCollection(); as collection) {
+      <div class="relative grid grid-cols-2 max-[700px]:grid-cols-1">
+        <button
+          class="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center bg-white text-2xl shadow-sm"
+          type="button"
+          aria-label="Fermer les détails"
+          (click)="closeDetails()"
+        >
+          ×
+        </button>
+        <div class="relative bg-[#f6f6f6]">
+          <img
+            class="aspect-[3/4] max-h-[90svh] w-full object-cover object-top"
+            [src]="selectedImage()"
+            [alt]="collection.imageAlt + ' — photo ' + (currentImageIndex() + 1)"
+          />
+          @if (collection.galleryImages.length > 1) {
+            <button
+              class="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white text-3xl leading-none shadow-md transition hover:bg-black hover:text-white"
+              type="button"
+              [attr.aria-label]="'Photo précédente de ' + collection.name"
+              (click)="showPreviousImage()"
+            >
+              ‹
+            </button>
+            <span class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 px-3 py-1 text-xs text-white">
+              {{ currentImageIndex() + 1 }} / {{ collection.galleryImages.length }}
+            </span>
+            <button
+              class="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white text-3xl leading-none shadow-md transition hover:bg-black hover:text-white"
+              type="button"
+              [attr.aria-label]="'Photo suivante de ' + collection.name"
+              (click)="showNextImage()"
+            >
+              ›
+            </button>
+          }
+        </div>
+        <div class="flex flex-col justify-center px-8 py-12 max-[700px]:px-6 max-[700px]:py-8">
+          <p class="mb-2 text-[10px] font-semibold uppercase text-black/50">Capsule Baaxantal</p>
+          <h2 id="product-dialog-title" class="mb-4 font-serif text-4xl font-normal uppercase">{{ collection.name }}</h2>
+          <p class="mb-8 text-sm leading-relaxed">{{ collection.imageAlt }}. Une création de la capsule Baaxantal.</p>
+          <p class="mb-3 text-xs font-semibold uppercase">Choisir une taille</p>
+          <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Tailles disponibles">
+            @for (size of sizes; track size) {
+              <button
+                class="grid h-11 min-w-11 place-items-center border px-3 text-xs transition"
+                [class.border-black]="selectedSize() === size"
+                [class.bg-black]="selectedSize() === size"
+                [class.text-white]="selectedSize() === size"
+                [attr.aria-pressed]="selectedSize() === size"
+                type="button"
+                (click)="selectedSize.set(size)"
+              >
+                {{ size }}
+              </button>
+            }
+          </div>
+          <a
+            class="inline-flex min-h-12 items-center justify-center bg-black px-6 text-xs font-semibold uppercase text-white transition hover:bg-black/75"
+            [class.pointer-events-none]="!selectedSize()"
+            [class.opacity-40]="!selectedSize()"
+            [attr.aria-disabled]="!selectedSize()"
+            [href]="selectedSize() ? orderLink(collection, selectedSize()) : null"
+          >
+            Commander par e-mail
+          </a>
+          @if (!selectedSize()) {
+            <p class="mt-3 text-xs text-black/50">Sélectionnez une taille pour continuer.</p>
+          }
+          <button
+            class="mt-3 inline-flex min-h-12 cursor-pointer items-center justify-center border border-black px-6 text-xs font-semibold uppercase transition hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            type="button"
+            [disabled]="!selectedSize()"
+            (click)="addToCart(collection)"
+          >
+            Ajouter au panier
+          </button>
+        </div>
+      </div>
+    }
+  </dialog>
 </section>

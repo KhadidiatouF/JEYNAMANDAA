@@ -13,4 +13,6 @@ export class CategoryFeature {
   readonly imageAlt = input.required<string>();
   readonly categories = input.required<readonly string[]>();
   readonly reverse = input(false);
+  readonly lowerContent = input(false);
+  readonly lowerContentMore = input(false);
 }
